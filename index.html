@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Billing Organizations — Master Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f1c38;--navy2:#1a2e55;--navy3:#243b6e;
+  --white:#fff;--bg:#eef2ff;--text:#0f172a;--muted:#64748b;--border:#cbd5e1;
+  --c1:#1d4ed8;--c1l:#dbeafe;--c1b:#93c5fd;
+  --c2:#0f766e;--c2l:#ccfbf1;--c2b:#5eead4;
+  --c3:#b45309;--c3l:#fef3c7;--c3b:#fbbf24;
+  --c4:#7c3aed;--c4l:#ede9fe;--c4b:#a78bfa;
+  --c5:#be123c;--c5l:#ffe4e6;--c5b:#fda4af;
+  --c6:#065f46;--c6l:#d1fae5;--c6b:#34d399;
+  --c7:#92400e;--c7l:#fef9c3;--c7b:#fde047;
+  --c8:#1e3a5f;--c8l:#e0f2fe;--c8b:#7dd3fc;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,var(--navy3) 100%);padding:2rem 1.5rem 1.75rem;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%);}
+.hero-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);margin-bottom:.9rem;}
+.hero h1{font-size:clamp(20px,4vw,34px);font-weight:900;color:#fff;line-height:1.2;margin-bottom:.4rem;}
+.hero p{font-size:13px;color:rgba(255,255,255,.6);max-width:540px;margin:0 auto 1rem;}
+.hero-stats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.hstat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 18px;text-align:center;}
+.hstat-n{font-size:22px;font-weight:900;color:#fff;}
+.hstat-l{font-size:11px;color:rgba(255,255,255,.55);font-weight:600;}
+
+/* NAV */
+.nav-bar{background:var(--white);border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.nav-bar::-webkit-scrollbar{display:none;}
+.ntab{flex-shrink:0;padding:.9rem 1.2rem;font-size:13px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.ntab:hover{color:var(--text);}
+.ntab.on{color:var(--c1);border-bottom-color:var(--c1);}
+
+/* PAGES */
+.page{display:none;max-width:960px;margin:0 auto;padding:1.5rem 1rem 3rem;}
+.page.on{display:block;}
+
+/* CATEGORY FILTER */
+.cat-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.cf-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.cf-btn:hover{border-color:var(--c1);color:var(--c1);}
+.cf-btn.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+/* ORG CARDS GRID */
+.orgs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.org-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:1.1rem 1.2rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.org-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px;}
+.org-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.org-card.expanded{border-width:2px;}
+.oc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:.6rem;}
+.oc-abbr{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;white-space:nowrap;padding:4px 10px;border-radius:7px;flex-shrink:0;}
+.oc-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.4;}
+.oc-role{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:.5rem;}
+.oc-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.oc-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;}
+.oc-expand{display:none;margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--border);}
+.org-card.expanded .oc-expand{display:block;}
+.oc-detail{font-size:12.5px;color:var(--text);line-height:1.7;}
+.oc-detail b{color:var(--navy);font-weight:800;}
+.oc-codes{display:flex;flex-wrap:wrap;gap:5px;margin-top:.5rem;}
+.oc-code{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:5px;}
+.expand-hint{font-size:11px;color:var(--muted);margin-top:.5rem;font-weight:600;}
+
+/* MATCHING GAME */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+@media(max-width:600px){.match-wrap{grid-template-columns:1fr;}}
+.match-col-title{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.75rem;}
+.match-item{background:var(--white);border-radius:10px;border:2px solid var(--border);padding:.75rem 1rem;margin-bottom:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;min-height:50px;}
+.match-item:hover:not(.locked){background:var(--c1l);border-color:var(--c1b);}
+.match-item.selected{background:var(--c4l);border-color:var(--c4b);color:var(--c4);}
+.match-item.correct{background:var(--c6l);border-color:var(--c6b);color:var(--c6);cursor:default;}
+.match-item.wrong{background:var(--c5l);border-color:var(--c5b);color:var(--c5);animation:shake .3s ease;}
+.match-item.locked{cursor:default;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.match-abbr{font-family:'DM Mono',monospace;font-size:14px;min-width:60px;}
+.match-score-bar{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;}
+.ms-track{flex:1;height:8px;background:var(--border);border-radius:4px;}
+.ms-fill{height:8px;background:linear-gradient(90deg,var(--c1),var(--c2));border-radius:4px;transition:width .4s;}
+.ms-label{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;}
+.ms-score{font-family:'DM Mono',monospace;font-size:13px;color:var(--c1);font-weight:500;}
+.match-result{background:var(--white);border-radius:14px;padding:2.5rem;text-align:center;border:2px solid var(--c6b);display:none;}
+.match-result.show{display:block;}
+.mr-score{font-size:64px;font-weight:900;color:var(--navy);line-height:1;}
+.mr-pct{font-family:'DM Mono',monospace;font-size:22px;color:var(--c1);margin:.25rem 0 .75rem;}
+.mr-msg{font-size:14px;color:var(--muted);margin-bottom:1.5rem;}
+
+/* FLASHCARDS */
+.fc-controls{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
+.fc-sel{padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;background:var(--white);cursor:pointer;}
+.fc-hint{font-size:12px;color:var(--muted);text-align:center;margin-bottom:.75rem;}
+.flashcard{perspective:900px;height:170px;cursor:pointer;margin-bottom:1.25rem;}
+.fc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s;}
+.fc-inner.flipped{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.fc-front{background:var(--navy);color:#fff;border:2px solid var(--navy2);}
+.fc-front .fq{font-size:18px;font-weight:900;text-align:center;line-height:1.3;}
+.fc-front .fsub{font-size:11px;color:rgba(255,255,255,.5);margin-top:.5rem;}
+.fc-back{transform:rotateY(180deg);background:var(--white);border:2px solid var(--c1b);}
+.fc-back .fa{font-size:16px;font-weight:900;color:var(--c1);text-align:center;margin-bottom:.5rem;}
+.fc-back .fd{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;}
+.fc-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:.5rem;}
+.fc-nav button{padding:8px 20px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.fc-nav button:hover{background:var(--bg);}
+.fc-pos{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);min-width:60px;text-align:center;}
+.fc-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+
+/* QUIZ */
+.qprog{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;}
+.qp-track{flex:1;height:8px;background:var(--border);border-radius:4px;}
+.qp-fill{height:8px;background:linear-gradient(90deg,var(--c1),var(--c2));border-radius:4px;transition:width .4s;}
+.qp-lbl{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;}
+.qscore{font-family:'DM Mono',monospace;font-size:13px;color:var(--c1);}
+.qcard{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:1rem;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.qcard-head{padding:1rem 1.25rem .75rem;border-bottom:1px solid var(--bg);}
+.qtag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;margin-bottom:.5rem;}
+.qnum{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:.25rem;}
+.qtext{font-size:15px;font-weight:700;color:var(--text);line-height:1.6;}
+.qopts{padding:.75rem 1.25rem 1rem;display:flex;flex-direction:column;gap:8px;}
+.qopt{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:#fafafa;cursor:pointer;font-size:13.5px;color:var(--text);text-align:left;line-height:1.5;transition:all .12s;}
+.qopt:hover:not(.locked){background:var(--c1l);border-color:var(--c1b);color:#1e3a8a;}
+.qltr{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .12s;}
+.qopt:hover:not(.locked) .qltr{background:var(--c1);color:#fff;}
+.qopt.correct{background:var(--c6l);border-color:var(--c6b);color:var(--c6);}
+.qopt.correct .qltr{background:var(--c6);color:#fff;}
+.qopt.wrong{background:var(--c5l);border-color:var(--c5b);color:var(--c5);}
+.qopt.wrong .qltr{background:var(--c5);color:#fff;}
+.qopt.locked{cursor:default;}
+.rat-panel{margin:0 1.25rem 1.25rem;border-radius:10px;overflow:hidden;border:1px solid var(--border);display:none;}
+.rat-panel.show{display:block;}
+.rrow{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;font-size:12.5px;line-height:1.5;border-bottom:1px solid rgba(0,0,0,.04);}
+.rrow:last-child{border-bottom:none;}
+.rrow.rok{background:var(--c6l);color:var(--c6);}
+.rrow.rno{background:var(--c5l);color:var(--c5);}
+.ri{font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.nbtn-wrap{padding:0 1.25rem 1.25rem;display:none;}
+.nbtn-wrap.show{display:block;}
+.nbtn-wrap button{padding:9px 22px;border-radius:10px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;}
+.result-box{background:var(--white);border-radius:16px;border:2px solid var(--c6b);padding:2.5rem 1.5rem;text-align:center;}
+.rb-score{font-size:64px;font-weight:900;color:var(--navy);line-height:1;}
+.rb-pct{font-family:'DM Mono',monospace;font-size:22px;color:var(--c1);margin:.25rem 0 .75rem;}
+.rb-msg{font-size:15px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.rb-cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:1.5rem;}
+.rb-cat{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid;}
+.rb-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rb-btn{padding:10px 24px;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border:none;}
+.rb-btn.p{background:var(--navy);color:#fff;}
+.rb-btn.o{background:var(--bg);color:var(--text);border:1.5px solid var(--border);}
+
+/* UTIL */
+.tip{border-radius:10px;padding:.85rem 1.1rem;margin:.75rem 0;font-size:13px;line-height:1.6;}
+.tip b{font-weight:800;display:block;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;}
+.tip-amber{background:var(--c3l);color:var(--c3);border:1px solid var(--c3b);}
+.tip-blue{background:var(--c1l);color:#1e40af;border:1px solid var(--c1b);}
+.section-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:1.5rem 0 .75rem;padding-left:2px;}
+hr.sl{border:none;border-top:2px solid var(--c1b);margin-bottom:.75rem;}
+.action-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:1.25rem;}
+.act-btn{padding:7px 16px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;color:var(--text);}
+.act-btn:hover{background:var(--bg);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">NHA CBCS Exam Prep</div>
+  <h1>Organizations Every Biller Must Know</h1>
+  <p>From CDC to AHIMA — learn every org, their role in billing & coding, and what they're responsible for</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n">30+</div><div class="hstat-l">Organizations</div></div>
+    <div class="hstat"><div class="hstat-n">4</div><div class="hstat-l">Learning modes</div></div>
+    <div class="hstat"><div class="hstat-n">25</div><div class="hstat-l">Quiz questions</div></div>
+    <div class="hstat"><div class="hstat-n">8</div><div class="hstat-l">Categories</div></div>
+  </div>
+</div>
+
+<div class="nav-bar">
+  <div class="ntab on" onclick="showPage('orgs',this)">🏛️ All Organizations</div>
+  <div class="ntab" onclick="showPage('flash',this)">🃏 Flashcards</div>
+  <div class="ntab" onclick="showPage('match',this)">🎯 Matching Game</div>
+  <div class="ntab" onclick="showPage('quiz',this)">✏️ Quiz Me</div>
+</div>
+
+<!-- ═══════════════ PAGE 1: ALL ORGS ═══════════════ -->
+<div id="pg-orgs" class="page on">
+  <div class="tip tip-amber"><b>How to use this page</b>Click any card to expand it and see full details, billing relevance, and what codes/programs they oversee. Use the filters to focus on one category at a time.</div>
+  <div class="cat-filter" id="catFilter"></div>
+  <div class="orgs-grid" id="orgsGrid"></div>
+</div>
+
+<!-- ═══════════════ PAGE 2: FLASHCARDS ═══════════════ -->
+<div id="pg-flash" class="page">
+  <div class="fc-controls">
+    <select class="fc-sel" id="fcCat" onchange="initFlash()">
+      <option value="all">All organizations (30 cards)</option>
+      <option value="federal">Federal government</option>
+      <option value="coding">Coding & standards</option>
+      <option value="professional">Professional associations</option>
+      <option value="payer">Payers & programs</option>
+      <option value="compliance">Compliance & oversight</option>
+    </select>
+    <button class="act-btn" onclick="shuffleFlash()">🔀 Shuffle</button>
+    <span class="fc-counter" id="fcCounter">Card 1 of 30</span>
+  </div>
+  <p class="fc-hint">Click the card to flip and reveal the full answer</p>
+  <div class="flashcard" onclick="flipCard()">
+    <div class="fc-inner" id="fcInner">
+      <div class="fc-face fc-front"><div class="fq" id="fcQ"></div><div class="fsub">Click to flip</div></div>
+      <div class="fc-face fc-back"><div class="fa" id="fcA"></div><div class="fd" id="fcD"></div></div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="fcMove(-1)">← Prev</button>
+    <span class="fc-pos" id="fcPos">1 / 30</span>
+    <button onclick="fcMove(1)">Next →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 3: MATCHING GAME ═══════════════ -->
+<div id="pg-match" class="page">
+  <div class="tip tip-blue"><b>How to play</b>Tap an abbreviation on the left, then tap its matching full name on the right. Get them all right to win! Wrong matches bounce back.</div>
+  <div class="match-score-bar">
+    <div class="ms-track"><div class="ms-fill" id="msFill" style="width:0%"></div></div>
+    <span class="ms-label" id="msLabel">0 of 15 matched</span>
+    <span class="ms-score" id="msScore">✓ 0</span>
+    <button class="act-btn" onclick="initMatch()">↺ Reset</button>
+  </div>
+  <div class="match-wrap">
+    <div><div class="match-col-title">Abbreviation</div><div id="matchLeft"></div></div>
+    <div><div class="match-col-title">Full name — tap to match</div><div id="matchRight"></div></div>
+  </div>
+  <div class="match-result" id="matchResult">
+    <div class="mr-score" id="mrScore">15/15</div>
+    <div class="mr-pct" id="mrPct">100%</div>
+    <div class="mr-msg" id="mrMsg">Perfect! You know all your billing organizations!</div>
+    <button class="rb-btn p" onclick="initMatch()" style="margin-top:1rem;">↺ Play again</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 4: QUIZ ═══════════════ -->
+<div id="pg-quiz" class="page">
+  <div id="quizWrap"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const CATS = {
+  federal:    {label:'Federal Government',  color:'--c1', bg:'#dbeafe', border:'#93c5fd', text:'#1e3a8a'},
+  coding:     {label:'Coding & Standards',  color:'--c2', bg:'#ccfbf1', border:'#5eead4', text:'#065f46'},
+  professional:{label:'Professional Assoc.',color:'--c4', bg:'#ede9fe', border:'#a78bfa', text:'#4c1d95'},
+  payer:      {label:'Payers & Programs',   color:'--c3', bg:'#fef3c7', border:'#fbbf24', text:'#92400e'},
+  compliance: {label:'Compliance & Law',    color:'--c5', bg:'#ffe4e6', border:'#fda4af', text:'#9f1239'},
+  claims:     {label:'Claims & Forms',      color:'--c6', bg:'#d1fae5', border:'#34d399', text:'#065f46'},
+  it:         {label:'Health IT',           color:'--c8', bg:'#e0f2fe', border:'#7dd3fc', text:'#0c4a6e'},
+  accred:     {label:'Accreditation',       color:'--c7', bg:'#fef9c3', border:'#fde047', text:'#713f12'},
+};
+
+const ORGS = [
+  // FEDERAL GOVERNMENT
+  {abbr:'CMS', cat:'federal', name:'Centers for Medicare & Medicaid Services',
+   role:'The single most important federal agency in medical billing. Administers Medicare, Medicaid, CHIP, and the ACA marketplace.',
+   detail:'CMS is part of the U.S. Department of Health and Human Services (HHS). It sets all Medicare and Medicaid payment rules, billing guidelines, and code set requirements. CMS also maintains HCPCS Level II codes and ICD-10-PCS, and it oversees claim processing contractors (MACs). Most billing rules that apply to private payers are modeled after CMS guidelines.',
+   codes:['HCPCS Level II','ICD-10-PCS','Medicare','Medicaid','CHIP'],
+   tags:['Maintains HCPCS II','Oversees Medicare/Medicaid','Sets billing rules']},
+
+  {abbr:'HHS', cat:'federal', name:'Department of Health and Human Services',
+   role:'The cabinet-level federal department that oversees all U.S. health programs. CMS, CDC, NIH, FDA, and OIG are all part of HHS.',
+   detail:'HHS is the parent department above CMS, CDC, NIH, FDA, and OIG. It sets broad national health policy. When CMS, OIG, or CDC release regulations, those rules flow down from HHS authority.',
+   codes:['Parent of CMS, CDC, NIH, FDA, OIG'],
+   tags:['Parent agency of CMS','Sets national health policy']},
+
+  {abbr:'CDC', cat:'federal', name:'Centers for Disease Control and Prevention',
+   role:'U.S. public health agency under HHS. Relevance to billing: the CDC NCHS (National Center for Health Statistics) division develops and maintains ICD-10-CM diagnosis codes.',
+   detail:'The CDC\'s division NCHS (National Center for Health Statistics) is responsible for developing and maintaining ICD-10-CM — the diagnosis code set used in ALL healthcare settings in the United States. The CDC also tracks disease statistics, manages public health programs, and provides data that influences billing guidelines.',
+   codes:['ICD-10-CM (via NCHS)'],
+   tags:['Maintains ICD-10-CM','Parent of NCHS']},
+
+  {abbr:'NCHS', cat:'federal', name:'National Center for Health Statistics',
+   role:'Division of the CDC. Directly responsible for developing and maintaining ICD-10-CM to replace ICD-9-CM.',
+   detail:'NCHS is the U.S. federal agency specifically tasked with developing ICD-10-CM (the clinical modification of ICD-10 for U.S. use). It adapted the WHO\'s ICD-10 into a system usable for U.S. billing and clinical documentation. ICD-10-CM replaced ICD-9-CM on October 1, 2015.',
+   codes:['ICD-10-CM'],
+   tags:['Developed ICD-10-CM','Division of CDC','Replaced ICD-9-CM in 2015']},
+
+  {abbr:'NIH', cat:'federal', name:'National Institutes of Health',
+   role:'The U.S. primary medical research agency under HHS. Funds medical research that eventually influences clinical guidelines and covered services.',
+   detail:'NIH conducts and funds biomedical research. While NIH does not directly create billing codes, its research informs what treatments become standard of care — which affects what gets coded and reimbursed. NIH is under the HHS umbrella alongside CMS, CDC, OIG, and FDA.',
+   codes:['Influences clinical guidelines'],
+   tags:['Medical research agency','Under HHS','Influences covered services']},
+
+  {abbr:'FDA', cat:'federal', name:'Food and Drug Administration',
+   role:'Regulates drugs, devices, and biologics. FDA approval determines whether a drug or device can be billed — HCPCS J codes and device codes often require FDA approval first.',
+   detail:'The FDA approves drugs and medical devices before they can be marketed and billed. Many HCPCS Level II J codes (injectable drugs) and device codes only exist because FDA cleared those products. The FDA also operates under HHS.',
+   codes:['Affects HCPCS drug codes','Device coverage decisions'],
+   tags:['Drug/device approval','Under HHS','Impacts HCPCS J codes']},
+
+  // CODING & STANDARDS
+  {abbr:'AMA', cat:'coding', name:'American Medical Association',
+   role:'Publishes and owns the copyright to CPT codes. The AMA is the most important organization for outpatient procedure coding.',
+   detail:'The AMA (American Medical Association) created CPT (Current Procedural Terminology) in 1966 and updates it annually. CPT is the code set used for outpatient, physician, clinic, and ASC procedures on the CMS-1500 claim form. The AMA also publishes physician specialty codes and works with CMS on code edits and payment policies. CPT is a registered trademark owned by the AMA.',
+   codes:['CPT — all sections','Physician specialty codes'],
+   tags:['Owns CPT codes','Updates CPT annually','Founded CPT in 1966']},
+
+  {abbr:'WHO', cat:'coding', name:'World Health Organization',
+   role:'International health organization that created and maintains ICD (International Classification of Diseases) globally. The U.S. adapted ICD-10 into ICD-10-CM.',
+   detail:'The WHO (World Health Organization) maintains ICD as a global classification system. The current version is ICD-11 globally, but the U.S. uses ICD-10-CM (a clinical modification developed by NCHS/CDC). The WHO does not maintain ICD-10-CM directly — that is done by NCHS — but the underlying structure is based on WHO\'s ICD-10.',
+   codes:['ICD-10 (global)','ICD-11 (current global version)'],
+   tags:['Created ICD globally','UN health agency','U.S. uses adapted ICD-10-CM']},
+
+  {abbr:'NUCC', cat:'coding', name:'National Uniform Claim Committee',
+   role:'Maintains the CMS-1500 professional claim form used by physicians and providers.',
+   detail:'The NUCC oversees the design, content, and updates to the CMS-1500 claim form (also called HCFA-1500). This is the form used by physicians, clinicians, and other professional providers to submit claims to Medicare, Medicaid, and commercial payers.',
+   codes:['CMS-1500 claim form'],
+   tags:['Maintains CMS-1500','Professional claim form']},
+
+  {abbr:'NUBC', cat:'coding', name:'National Uniform Billing Committee',
+   role:'Maintains the UB-04 institutional claim form used by hospitals for both inpatient and outpatient billing.',
+   detail:'The NUBC (National Uniform Billing Committee) is responsible for the UB-04 (CMS-1450) — the claim form used by all hospital facilities (inpatient and outpatient). The UB-04 carries revenue codes, ICD-10-CM diagnosis codes, ICD-10-PCS procedure codes, CPT codes (outpatient), and HCPCS Level II codes.',
+   codes:['UB-04 (CMS-1450)','Revenue codes'],
+   tags:['Maintains UB-04','Institutional claim form','Hospital billing']},
+
+  {abbr:'UHDDS', cat:'coding', name:'Uniform Hospital Discharge Data Set',
+   role:'Defines the standard data elements collected for inpatient discharges. Establishes the definition of "principal diagnosis" used in inpatient coding.',
+   detail:'The UHDDS defines key inpatient coding concepts including Principal Diagnosis: "the condition established after study to be chiefly responsible for occasioning the admission." This definition is the foundation for all inpatient coding sequencing decisions. UHDDS also defines other diagnoses (comorbidities) that must be coded.',
+   codes:['Inpatient coding guidelines','Principal diagnosis definition'],
+   tags:['Defines principal diagnosis','Inpatient data standards','Used for DRG assignment']},
+
+  // PROFESSIONAL ASSOCIATIONS
+  {abbr:'AHIMA', cat:'professional', name:'American Health Information Management Association',
+   role:'The premier professional association for health information management (HIM). Offers CCS, RHIA, and RHIT coding certifications.',
+   detail:'AHIMA provides education, advocacy, and certification for health information professionals including coders, billers, and health data analysts. AHIMA certifications include CCS (Certified Coding Specialist), CCS-P (physician-based), RHIA (Registered Health Information Administrator), and RHIT (Registered Health Information Technician). AHIMA also publishes ICD-10-CM/PCS official guidelines jointly with CMS, AHA, and NCHS.',
+   codes:['CCS','RHIA','RHIT','CCS-P'],
+   tags:['Health information professionals','CCS certification','Co-publishes ICD guidelines']},
+
+  {abbr:'AAPC', cat:'professional', name:'American Academy of Professional Coders',
+   role:'The largest medical coding professional organization. Offers CPC (Certified Professional Coder) and many specialty coding certifications.',
+   detail:'AAPC offers the CPC (Certified Professional Coder) credential, which is one of the most recognized outpatient coding certifications. It also offers CPC-H (hospital outpatient), CIC (inpatient), COC (outpatient), and dozens of specialty-specific credentials. AAPC provides education, local chapter meetings, and continuing education for coders.',
+   codes:['CPC certification','CIC','COC','Specialty coder certs'],
+   tags:['Largest coder association','CPC certification','Education and CEUs']},
+
+  {abbr:'NHA', cat:'professional', name:'National Healthcareer Association',
+   role:'The organization that administers the CBCS (Certified Billing and Coding Specialist) exam — the certification YOUR class is studying for.',
+   detail:'NHA has awarded over 750,000 certifications since 1989. The CBCS exam is 100 scored questions + 25 pretest items, with a 3-hour time limit. It covers: Revenue cycle & compliance, Insurance eligibility, Coding guidelines, and Billing & reimbursement. Administered at PSI testing centers or online with live remote proctoring.',
+   codes:['CBCS exam','100 scored + 25 pretest','3-hour time limit'],
+   tags:['Administers CBCS exam','YOUR certification target','750,000+ certs awarded']},
+
+  {abbr:'AHA', cat:'professional', name:'American Hospital Association',
+   role:'Represents hospitals nationally. Jointly publishes the Official ICD-10-CM/PCS Coding Guidelines with NCHS, CMS, and AHIMA.',
+   detail:'The AHA (American Hospital Association) represents hospitals and health systems. In the context of coding, the AHA is one of four "cooperating parties" that jointly publish the Official ICD-10-CM/PCS Coding Guidelines used by all coders. The AHA Coding Clinic is an authoritative publication for ICD-10-CM/PCS coding advice.',
+   codes:['ICD-10-CM/PCS guidelines co-author','AHA Coding Clinic'],
+   tags:['Represents hospitals','Co-publishes ICD guidelines','AHA Coding Clinic']},
+
+  {abbr:'HIMSS', cat:'professional', name:'Health Information and Management Systems Society',
+   role:'Professional organization focused on health information technology (health IT), electronic health records, and interoperability.',
+   detail:'HIMSS focuses on health IT and the use of technology to improve healthcare delivery. While not a coding organization, HIMSS is relevant to billers because health IT systems (EHRs, billing software, clearinghouses) are central to revenue cycle management. HIMSS runs major annual conferences and promotes health information standards.',
+   codes:['Health IT standards','EHR interoperability'],
+   tags:['Health IT focus','EHR and interoperability','Annual HIMSS conference']},
+
+  // PAYERS & PROGRAMS
+  {abbr:'Medicare', cat:'payer', name:'Medicare — Federal Health Insurance Program',
+   role:'Federal health insurance for people 65+ and those with qualifying disabilities. The largest single payer in the U.S. — Medicare rules set the standard that most other payers follow.',
+   detail:'Medicare is administered by CMS. It has multiple parts: Part A (hospital/inpatient), Part B (outpatient/physician), Part C (Medicare Advantage — private plans), Part D (prescription drugs). Medicare pays hospitals via IPPS/DRGs for inpatient and OPPS/APCs for outpatient. Physician services are paid via RBRVS fee schedule. Medicare rules drive most billing compliance requirements.',
+   codes:['Part A — inpatient/hospital','Part B — outpatient/physician','Part C — Medicare Advantage','Part D — prescriptions'],
+   tags:['Federal payer — age 65+','Parts A, B, C, D','Sets billing standards']},
+
+  {abbr:'Medicaid', cat:'payer', name:'Medicaid — Joint Federal/State Health Insurance',
+   role:'Joint federal-state health insurance for low-income individuals and families. Rules vary by state. Administered by CMS at the federal level.',
+   detail:'Medicaid is funded jointly by federal and state governments and administered individually by each state, so billing rules vary significantly. Federal guidelines are set by CMS. Medicaid covers low-income adults, children, pregnant women, elderly, and people with disabilities. S codes in HCPCS are NOT valid for Medicaid claims.',
+   codes:['State-specific billing rules','Cannot use S codes'],
+   tags:['Low-income coverage','Federal/state joint program','Rules vary by state']},
+
+  {abbr:'CHIP', cat:'payer', name:"Children's Health Insurance Program",
+   role:'Provides health insurance to children in families that earn too much for Medicaid but cannot afford private insurance. Administered by CMS.',
+   detail:"CHIP (Children's Health Insurance Program) covers children up to age 19 in families with incomes too high for Medicaid but too low for private insurance. It is administered by CMS and implemented by individual states. Billing rules are similar to Medicaid.",
+   codes:['Similar to Medicaid billing'],
+   tags:['Children under 19','Income above Medicaid level','Administered by CMS']},
+
+  {abbr:'TRICARE', cat:'payer', name:'TRICARE — Military Health Program',
+   role:'Health insurance program for active duty military, veterans, and their families. Formerly called CHAMPUS.',
+   detail:'TRICARE is the healthcare program for U.S. military service members, retirees, and their families. It was formerly known as CHAMPUS (Civilian Health and Medical Program of the Uniformed Services). CHAMPVA covers dependents of veterans with permanent service-connected disabilities.',
+   codes:['Formerly CHAMPUS','Military health coverage'],
+   tags:['Military health insurance','Formerly CHAMPUS','Active duty + veterans']},
+
+  {abbr:'BCBS', cat:'payer', name:'Blue Cross Blue Shield',
+   role:'The largest private insurance federation in the U.S. BCBS maintains S codes in HCPCS Level II for services not covered by Medicare/Medicaid.',
+   detail:'BCBS is a federation of independent health insurance companies operating across all 50 states. It is the largest private health insurer in the U.S. BCBS maintains S codes in HCPCS Level II — these codes are valid for BCBS and other private payer claims but NOT for Medicare or Medicaid.',
+   codes:['S codes in HCPCS','Private insurance'],
+   tags:['Largest private insurer','Maintains HCPCS S codes','NOT valid for Medicare']},
+
+  // COMPLIANCE & OVERSIGHT
+  {abbr:'OIG', cat:'compliance', name:'Office of Inspector General',
+   role:'The watchdog of HHS. Conducts audits, investigations, and evaluations to prevent healthcare fraud, waste, and abuse. Publishes the annual Work Plan.',
+   detail:'The OIG protects HHS programs including Medicare, Medicaid, CDC, NIH, and FDA from fraud, waste, and abuse. It conducts audits and publishes findings that often drive CMS policy changes. The OIG Annual Work Plan tells providers which billing areas will be under scrutiny that year. The OIG also maintains the Exclusion List — providers excluded from Medicare/Medicaid participation.',
+   codes:['Annual Work Plan','Exclusion List','RAC audits'],
+   tags:['Healthcare fraud watchdog','Publishes Work Plan','Exclusions and audits']},
+
+  {abbr:'DOJ', cat:'compliance', name:'Department of Justice',
+   role:'The federal law enforcement agency that prosecutes healthcare fraud cases referred by OIG. Enforces the False Claims Act.',
+   detail:'When the OIG or CMS identifies significant healthcare fraud, the DOJ (Department of Justice) or FBI is called to execute enforcement action. The DOJ prosecutes False Claims Act violations — which include upcoding, billing for services not rendered, and fraudulent billing schemes.',
+   codes:['False Claims Act enforcement','Criminal prosecution'],
+   tags:['Prosecutes fraud cases','Works with OIG/FBI','False Claims Act']},
+
+  {abbr:'HIPAA', cat:'compliance', name:'Health Insurance Portability and Accountability Act (1996)',
+   role:'Federal law enacted in 1996 that protects patient health information (PHI), standardizes electronic transactions, and sets security requirements.',
+   detail:'HIPAA has several key rules: Privacy Rule (protects PHI), Security Rule (protects electronic PHI/ePHI), Transaction and Code Set Rule (standardizes electronic billing transactions — requires use of ICD, CPT, HCPCS), and Identifier Standards (requires use of NPI). Every healthcare provider and biller must comply with HIPAA or face civil and criminal penalties.',
+   codes:['PHI protection','NPI requirement','Standard electronic transactions','HIPAA 5010 transactions'],
+   tags:['Patient privacy law — 1996','PHI/ePHI protection','Standardizes billing transactions']},
+
+  {abbr:'PDAC', cat:'compliance', name:'Pricing, Coding Analysis and Coding Contractor',
+   role:'A CMS contractor that helps suppliers and manufacturers determine the correct HCPCS codes for products billed to Medicare.',
+   detail:'PDAC is a contractor for CMS that provides coding guidance for DME (durable medical equipment), prosthetics, orthotics, and supplies (DMEPOS). When a manufacturer wants to know which HCPCS code to use for a new product, they submit to PDAC for a coding verification decision.',
+   codes:['DMEPOS coding guidance','HCPCS Level II verification'],
+   tags:['CMS contractor','Helps determine HCPCS codes','DME and supplies focus']},
+
+  // HEALTH IT
+  {abbr:'ONC', cat:'it', name:"Office of the National Coordinator for Health IT",
+   role:'Federal office within HHS that coordinates national health IT strategy including EHR adoption and health information exchange (HIE).',
+   detail:'ONC was created by executive order in 2004 and was given legislative authority through the HITECH Act of 2009. ONC coordinates the national effort to implement health information technology and promote interoperability between EHR systems — which directly affects how billing data flows between providers and payers.',
+   codes:['EHR standards','Health information exchange','HITECH Act'],
+   tags:['Health IT coordinator','EHR interoperability','Within HHS']},
+
+  {abbr:'X12', cat:'it', name:'ASC X12 — Electronic Data Interchange Standards',
+   role:'The organization that maintains the electronic transaction standards used in healthcare billing — including the 837P (professional claims), 837I (institutional claims), and 835 (remittance advice).',
+   detail:'ASC X12 Version 5010 is the current HIPAA-mandated electronic transaction standard. Key transactions: 837P = professional claims (CMS-1500 electronic), 837I = institutional claims (UB-04 electronic), 835 = electronic remittance advice (ERA), 270/271 = eligibility inquiry/response, 276/277 = claim status. HIPAA 5010 replaced HIPAA 4010 and became mandatory in 2012.',
+   codes:['837P — professional claims','837I — institutional claims','835 — remittance','270/271 — eligibility','276/277 — claim status'],
+   tags:['Electronic billing transactions','HIPAA 5010 standard','837P and 837I forms']},
+
+  // ACCREDITATION
+  {abbr:'TJC', cat:'accred', name:'The Joint Commission (formerly JCAHO)',
+   role:'Accredits and certifies hospitals, clinics, and healthcare organizations. Accreditation affects reimbursement — CMS grants "deemed status" to TJC-accredited facilities.',
+   detail:'The Joint Commission (formerly JCAHO — Joint Commission on Accreditation of Healthcare Organizations) accredits over 22,000 U.S. healthcare organizations. TJC accreditation grants hospitals "deemed status" from CMS, meaning they automatically meet Medicare/Medicaid participation requirements. Loss of accreditation can result in loss of Medicare reimbursement.',
+   codes:['Hospital accreditation','Deemed status for Medicare'],
+   tags:['Accredits hospitals','Formerly JCAHO','Medicare deemed status']},
+
+  {abbr:'NCQA', cat:'accred', name:'National Committee for Quality Assurance',
+   role:'Accredits managed care organizations and health plans. Develops the HEDIS quality measures used to evaluate health plan performance.',
+   detail:'NCQA accredits health plans including HMOs and PPOs. It develops HEDIS (Healthcare Effectiveness Data and Information Set) — quality measures that affect how health plans are rated and reimbursed. NCQA accreditation signals quality to employers and government payers.',
+   codes:['HEDIS quality measures','Health plan accreditation'],
+   tags:['Accredits health plans','HEDIS quality measures','HMO and PPO accreditation']},
+
+  {abbr:'URAC', cat:'accred', name:'URAC (formerly Utilization Review Accreditation Commission)',
+   role:'Accredits healthcare organizations for utilization management, case management, and specialty programs including workers compensation and pharmacy.',
+   detail:'URAC accredits healthcare organizations across a variety of programs including utilization management, case management, credentialing, and pharmacy benefit management. URAC accreditation demonstrates commitment to quality and is recognized by employers, payers, and government programs.',
+   codes:['Utilization management accreditation'],
+   tags:['UR accreditation','Case management focus','Workers comp programs']},
+
+  // CLAIMS / FORMS
+  {abbr:'MAC', cat:'claims', name:'Medicare Administrative Contractor',
+   role:'Private companies contracted by CMS to process Medicare Part A and Part B claims for specific geographic jurisdictions.',
+   detail:'MACs are private insurance companies that CMS contracts with to process Medicare claims. There are multiple MACs covering different regions of the U.S. MACs process claims, make coverage decisions, conduct audits, and provide provider education. Examples include Novitas, CGS, Noridian, and First Coast Service Options.',
+   codes:['Processes Medicare A & B claims','Regional claim processing'],
+   tags:['CMS contractors','Process Medicare claims','Regional jurisdictions']},
+
+  {abbr:'RAC', cat:'claims', name:'Recovery Audit Contractor',
+   role:'CMS contractors that audit Medicare claims for improper payments — both overpayments AND underpayments.',
+   detail:'RACs are authorized by Medicare Modernization Act of 2003 to identify improper payments. They review claims on a contingency fee basis. Providers receive Demand Letters for overpayments identified. RAC audits are one of the most common reasons billers must ensure accurate documentation and coding. RAC findings are published by the OIG.',
+   codes:['Medicare claim audits','Overpayment recovery'],
+   tags:['Audits Medicare claims','Recovers overpayments','Contingency fee based']},
+];
+
+// ══════════════════════════════════════════════════════
+// RENDER ORGS PAGE
+// ══════════════════════════════════════════════════════
+let currentCatFilter = 'all';
+
+function buildCatFilter() {
+  const div = document.getElementById('catFilter');
+  let html = `<button class="cf-btn on" onclick="filterCat('all',this)">All (${ORGS.length})</button>`;
+  Object.entries(CATS).forEach(([k,v]) => {
+    const cnt = ORGS.filter(o=>o.cat===k).length;
+    html += `<button class="cf-btn" onclick="filterCat('${k}',this)">${v.label} (${cnt})</button>`;
+  });
+  div.innerHTML = html;
+}
+
+function filterCat(cat, btn) {
+  currentCatFilter = cat;
+  document.querySelectorAll('.cf-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderOrgs();
+}
+
+function renderOrgs() {
+  const list = currentCatFilter === 'all' ? ORGS : ORGS.filter(o=>o.cat===currentCatFilter);
+  const grid = document.getElementById('orgsGrid');
+  grid.innerHTML = list.map((o,i) => {
+    const c = CATS[o.cat];
+    const tagsHtml = o.tags.map(t => `<span class="oc-tag" style="background:${c.bg};color:${c.text};border-color:${c.border}">${t}</span>`).join('');
+    const codesHtml = o.codes.map(cd => `<span class="oc-code" style="background:${c.bg};color:${c.text};">${cd}</span>`).join('');
+    return `<div class="org-card" id="oc-${o.abbr}" onclick="toggleCard('${o.abbr}')" style="border-color:${c.border};">
+      <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${c.border};border-radius:4px 0 0 4px;"></div>
+      <div class="oc-top" style="padding-left:4px;">
+        <div class="oc-abbr" style="background:${c.bg};color:${c.text};">${o.abbr}</div>
+        <div class="oc-name">${o.name}</div>
+      </div>
+      <div class="oc-role">${o.role}</div>
+      <div class="oc-tags">${tagsHtml}</div>
+      <div class="oc-expand">
+        <div class="oc-detail">${o.detail.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div>
+        <div class="oc-codes" style="margin-top:.6rem;">${codesHtml}</div>
+      </div>
+      <div class="expand-hint" style="margin-top:.5rem;font-size:11px;color:${c.text};">▼ Click to expand</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(abbr) {
+  const card = document.getElementById('oc-'+abbr);
+  card.classList.toggle('expanded');
+}
+
+// ══════════════════════════════════════════════════════
+// FLASHCARDS
+// ══════════════════════════════════════════════════════
+const FC_DATA = ORGS.map(o => ({
+  cat: o.cat,
+  q: `What does ${o.abbr} stand for, and what is its main role in billing?`,
+  a: o.name,
+  d: o.role
+}));
+
+// Add reverse cards (full name → abbr)
+ORGS.forEach(o => {
+  FC_DATA.push({
+    cat: o.cat,
+    q: `Which organization is responsible for: "${o.role.substring(0,80)}..."`,
+    a: o.abbr,
+    d: o.name
+  });
+});
+
+let fcDeck=[], fcIdx=0, fcFlipped=false;
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
+function initFlash(){
+  const cat=document.getElementById('fcCat').value;
+  fcDeck=shuffle(cat==='all'?FC_DATA.slice(0,60):FC_DATA.filter(c=>c.cat===cat));
+  if(fcDeck.length===0)fcDeck=FC_DATA.slice(0,10);
+  fcIdx=0;fcFlipped=false;showFCard();
+}
+function shuffleFlash(){fcDeck=shuffle(fcDeck);fcIdx=0;fcFlipped=false;showFCard();}
+function showFCard(){
+  const c=fcDeck[fcIdx];
+  document.getElementById('fcQ').textContent=c.q;
+  document.getElementById('fcA').textContent=c.a;
+  document.getElementById('fcD').textContent=c.d;
+  const inn=document.getElementById('fcInner');
+  inn.classList.remove('flipped');
+  fcFlipped=false;
+  document.getElementById('fcPos').textContent=`${fcIdx+1} / ${fcDeck.length}`;
+  document.getElementById('fcCounter').textContent=`Card ${fcIdx+1} of ${fcDeck.length}`;
+}
+function flipCard(){fcFlipped=!fcFlipped;document.getElementById('fcInner').classList.toggle('flipped',fcFlipped);}
+function fcMove(d){fcIdx=(fcIdx+d+fcDeck.length)%fcDeck.length;showFCard();}
+
+// ══════════════════════════════════════════════════════
+// MATCHING GAME
+// ══════════════════════════════════════════════════════
+const MATCH_POOL = [
+  {abbr:'CMS', full:'Centers for Medicare & Medicaid Services'},
+  {abbr:'AMA', full:'American Medical Association'},
+  {abbr:'CDC', full:'Centers for Disease Control and Prevention'},
+  {abbr:'NCHS', full:'National Center for Health Statistics'},
+  {abbr:'OIG', full:'Office of Inspector General'},
+  {abbr:'AHIMA', full:'American Health Information Management Association'},
+  {abbr:'AAPC', full:'American Academy of Professional Coders'},
+  {abbr:'NHA', full:'National Healthcareer Association'},
+  {abbr:'WHO', full:'World Health Organization'},
+  {abbr:'NUCC', full:'National Uniform Claim Committee'},
+  {abbr:'NUBC', full:'National Uniform Billing Committee'},
+  {abbr:'UHDDS', full:'Uniform Hospital Discharge Data Set'},
+  {abbr:'HIPAA', full:'Health Insurance Portability and Accountability Act'},
+  {abbr:'AHA', full:'American Hospital Association'},
+  {abbr:'PDAC', full:'Pricing, Coding Analysis and Coding Contractor'},
+];
+
+let matchState={}, matchSelected=null, matchWrong=0;
+function initMatch(){
+  matchState={};matchSelected=null;matchWrong=0;
+  const deck=shuffle(MATCH_POOL).slice(0,15);
+  window._matchDeck=deck;
+  const leftH=deck.map(m=>`<div class="match-item" id="ml-${m.abbr}" onclick="selectLeft('${m.abbr}')"><span class="match-abbr">${m.abbr}</span></div>`).join('');
+  const rightH=shuffle(deck).map(m=>`<div class="match-item" id="mr-${m.abbr}" onclick="selectRight('${m.abbr}')">${m.full}</div>`).join('');
+  document.getElementById('matchLeft').innerHTML=leftH;
+  document.getElementById('matchRight').innerHTML=rightH;
+  document.getElementById('matchResult').classList.remove('show');
+  updateMatchScore();
+}
+function selectLeft(abbr){
+  if(matchState[abbr]==='correct')return;
+  if(matchSelected===abbr){matchSelected=null;document.querySelectorAll('.match-item').forEach(e=>e.classList.remove('selected'));return;}
+  matchSelected=abbr;
+  document.querySelectorAll('#matchLeft .match-item').forEach(e=>e.classList.remove('selected'));
+  document.getElementById('ml-'+abbr).classList.add('selected');
+}
+function selectRight(abbr){
+  if(!matchSelected)return;
+  if(matchState[abbr]==='correct')return;
+  const leftEl=document.getElementById('ml-'+matchSelected);
+  const rightEl=document.getElementById('mr-'+abbr);
+  if(matchSelected===abbr){
+    matchState[abbr]='correct';
+    leftEl.classList.remove('selected');leftEl.classList.add('correct','locked');
+    rightEl.classList.add('correct','locked');
+    matchSelected=null;
+    updateMatchScore();
+    const done=Object.keys(matchState).filter(k=>matchState[k]==='correct').length;
+    if(done===window._matchDeck.length)setTimeout(showMatchResult,600);
+  } else {
+    matchWrong++;
+    rightEl.classList.add('wrong');
+    setTimeout(()=>rightEl.classList.remove('wrong'),600);
+    leftEl.classList.remove('selected');leftEl.classList.add('wrong');
+    setTimeout(()=>leftEl.classList.remove('wrong'),600);
+    matchSelected=null;
+  }
+}
+function updateMatchScore(){
+  const total=window._matchDeck?window._matchDeck.length:15;
+  const correct=Object.keys(matchState).filter(k=>matchState[k]==='correct').length;
+  const pct=Math.round((correct/total)*100);
+  document.getElementById('msFill').style.width=pct+'%';
+  document.getElementById('msLabel').textContent=`${correct} of ${total} matched`;
+  document.getElementById('msScore').textContent=`✓ ${correct}`;
+}
+function showMatchResult(){
+  const total=window._matchDeck.length;
+  const pct=matchWrong===0?100:Math.round((total/(total+matchWrong))*100);
+  const msg=matchWrong===0?'Perfect! You matched all organizations without a single mistake!':matchWrong<=3?`Great job! Only ${matchWrong} wrong attempt${matchWrong>1?'s':''}. Nearly perfect!`:`You got them all! ${matchWrong} wrong attempts — keep drilling those tricky ones.`;
+  document.getElementById('mrScore').textContent=`${total}/${total}`;
+  document.getElementById('mrPct').textContent=pct+'%';
+  document.getElementById('mrMsg').textContent=msg;
+  document.getElementById('matchResult').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════
+const QUESTIONS = [
+  {cat:'Federal Gov', q:'Which federal agency administers both Medicare AND Medicaid?', opts:['A. HHS','B. CDC','C. CMS — Centers for Medicare & Medicaid Services','D. OIG'], cor:2, rats:[{ok:false,l:'A',w:'HHS is the parent department — it does not directly administer Medicare/Medicaid. CMS does.'},{ok:false,l:'B',w:'CDC focuses on disease control and maintains ICD-10-CM through NCHS. It does not administer insurance programs.'},{ok:true,l:'C',w:'CMS (Centers for Medicare & Medicaid Services) directly administers Medicare, Medicaid, CHIP, and the ACA marketplace. It is the most important agency for billing and coding compliance.'},{ok:false,l:'D',w:'OIG is the oversight/audit watchdog — it does not administer insurance programs.'}]},
+  {cat:'Coding', q:'Which organization developed ICD-10-CM (the diagnosis code set used in all U.S. billing settings)?', opts:['A. AMA','B. WHO','C. NCHS — National Center for Health Statistics (division of CDC)','D. CMS'], cor:2, rats:[{ok:false,l:'A',w:'AMA developed CPT — not ICD-10-CM.'},{ok:false,l:'B',w:'WHO created the international ICD-10. The U.S. clinical modification (ICD-10-CM) was developed by NCHS, not directly by WHO.'},{ok:true,l:'C',w:'NCHS (National Center for Health Statistics), a division of the CDC, developed ICD-10-CM and maintains annual updates. It replaced ICD-9-CM on October 1, 2015.'},{ok:false,l:'D',w:'CMS developed ICD-10-PCS (inpatient procedure codes) — not ICD-10-CM diagnosis codes.'}]},
+  {cat:'Coding', q:'CPT (Current Procedural Terminology) is owned, published, and annually updated by:', opts:['A. CMS','B. AHIMA','C. NCHS','D. AMA — American Medical Association'], cor:3, rats:[{ok:false,l:'A',w:'CMS maintains HCPCS Level II and ICD-10-PCS — not CPT. CMS works WITH AMA but does not own CPT.'},{ok:false,l:'B',w:'AHIMA offers coding certifications (CCS, RHIA) and co-publishes ICD coding guidelines — but does not own CPT.'},{ok:false,l:'C',w:'NCHS is the CDC division that maintains ICD-10-CM — not CPT.'},{ok:true,l:'D',w:'The AMA (American Medical Association) created CPT in 1966 and holds the copyright. It updates CPT annually every January.'}]},
+  {cat:'Professional', q:'The CBCS certification exam is administered by which organization?', opts:['A. AHIMA','B. AAPC','C. AMA','D. NHA — National Healthcareer Association'], cor:3, rats:[{ok:false,l:'A',w:'AHIMA administers CCS, RHIA, and RHIT certifications — not CBCS.'},{ok:false,l:'B',w:'AAPC administers the CPC (Certified Professional Coder) and related credentials — not CBCS.'},{ok:false,l:'C',w:'AMA publishes CPT — it does not administer coding certifications.'},{ok:true,l:'D',w:'NHA (National Healthcareer Association) administers the CBCS exam — the exact certification your class is preparing for. NHA has awarded 750,000+ certifications since 1989.'}]},
+  {cat:'Coding', q:'The CMS-1500 claim form (used by physicians and professional providers) is maintained by:', opts:['A. NUBC — National Uniform Billing Committee','B. NUCC — National Uniform Claim Committee','C. CMS directly','D. AMA'], cor:1, rats:[{ok:false,l:'A',w:'NUBC maintains the UB-04 institutional claim form used by HOSPITALS — not the CMS-1500.'},{ok:true,l:'B',w:'NUCC (National Uniform Claim Committee) maintains the CMS-1500 professional claim form used by physicians, clinicians, and other professional providers.'},{ok:false,l:'C',w:'CMS is involved in the form but NUCC is the official body responsible for maintaining it.'},{ok:false,l:'D',w:'AMA publishes CPT codes — it does not maintain the CMS-1500 form.'}]},
+  {cat:'Coding', q:'The UB-04 institutional claim form (used by hospitals for inpatient and outpatient billing) is maintained by:', opts:['A. NUCC','B. AHIMA','C. NUBC — National Uniform Billing Committee','D. CMS'], cor:2, rats:[{ok:false,l:'A',w:'NUCC maintains the CMS-1500 professional claim form — not the UB-04.'},{ok:false,l:'B',w:'AHIMA is a professional association for health information management — it does not maintain claim forms.'},{ok:true,l:'C',w:'NUBC (National Uniform Billing Committee) is responsible for the UB-04 (CMS-1450). The UB-04 is used for all hospital facility billing — both inpatient and outpatient.'},{ok:false,l:'D',w:'CMS uses the UB-04 and funds its maintenance but NUBC is the official maintaining body.'}]},
+  {cat:'Compliance', q:'The OIG (Office of Inspector General) serves what primary function in healthcare?', opts:['A. It maintains CPT codes and updates them annually','B. It administers Medicare and Medicaid payments','C. It protects HHS programs from fraud, waste, and abuse through audits and investigations','D. It accredits hospitals and healthcare facilities'], cor:2, rats:[{ok:false,l:'A',w:'CPT is maintained by the AMA — not OIG.'},{ok:false,l:'B',w:'Medicare and Medicaid are administered by CMS — not OIG.'},{ok:true,l:'C',w:'The OIG (Office of Inspector General) is the watchdog of HHS. It conducts audits, investigations, and publishes the Annual Work Plan identifying billing areas under scrutiny. OIG findings often drive Medicare policy changes.'},{ok:false,l:'D',w:'Hospital accreditation is done by The Joint Commission (TJC) and other accrediting bodies — not OIG.'}]},
+  {cat:'Federal Gov', q:'HIPAA (Health Insurance Portability and Accountability Act) was enacted in what year and is best known for:', opts:['A. 1966 — creating the CPT code system','B. 1978 — creating standardized billing codes','C. 1996 — protecting patient health information and standardizing electronic transactions','D. 2015 — transitioning from ICD-9 to ICD-10'], cor:2, rats:[{ok:false,l:'A',w:'1966 is when CPT was first published by the AMA — not HIPAA.'},{ok:false,l:'B',w:'1978 is when HCPCS was established by CMS — not HIPAA.'},{ok:true,l:'C',w:'HIPAA was enacted in 1996. It protects PHI (Protected Health Information), requires standard electronic billing transactions (using ICD, CPT, HCPCS), and mandates the use of NPI numbers.'},{ok:false,l:'D',w:'ICD-10-CM/PCS replaced ICD-9-CM on October 1, 2015 — that is not HIPAA.'}]},
+  {cat:'Professional', q:'AHIMA is best described as:', opts:['A. The federal agency that administers Medicare','B. The organization that maintains CPT codes','C. A professional association for health information management — offers CCS, RHIA, and RHIT certifications','D. The organization that audits Medicare claims for fraud'], cor:2, rats:[{ok:false,l:'A',w:'The federal agency that administers Medicare is CMS — not AHIMA.'},{ok:false,l:'B',w:'CPT is maintained by the AMA — not AHIMA.'},{ok:true,l:'C',w:'AHIMA (American Health Information Management Association) is a professional organization for health information management. It offers CCS (Certified Coding Specialist), RHIA, and RHIT credentials, and co-publishes ICD-10-CM/PCS official coding guidelines.'},{ok:false,l:'D',w:'Medicare claim audits are conducted by RACs (Recovery Audit Contractors) and overseen by OIG — not AHIMA.'}]},
+  {cat:'Federal Gov', q:'The four "cooperating parties" that jointly publish Official ICD-10-CM/PCS Coding Guidelines are:', opts:['A. AMA, AAPC, AHIMA, NHA','B. CMS, NCHS, AHA, AHIMA','C. WHO, CDC, CMS, AMA','D. OIG, HHS, CMS, FDA'], cor:1, rats:[{ok:false,l:'A',w:'AMA publishes CPT guidelines — not ICD-10-CM/PCS guidelines. AAPC and NHA are professional associations, not guideline co-publishers.'},{ok:true,l:'B',w:'The four cooperating parties are: CMS (payer), NCHS/CDC (code maintainer), AHA (hospital representative — publishes Coding Clinic), and AHIMA (coding professionals). They jointly publish and update the Official ICD-10-CM/PCS Coding Guidelines.'},{ok:false,l:'C',w:'WHO created ICD-10 internationally but is not one of the U.S. cooperating parties. AMA maintains CPT — not ICD-10.'},{ok:false,l:'D',w:'OIG, HHS, and FDA do not co-publish ICD-10-CM/PCS guidelines.'}]},
+  {cat:'Payers', q:'Which HCPCS Level II code series is maintained by Blue Cross Blue Shield (BCBS) and is NOT valid for Medicare or Medicaid claims?', opts:['A. J codes','B. G codes','C. C codes','D. S codes'], cor:3, rats:[{ok:false,l:'A',w:'J codes are for injectable drugs — maintained by CMS. They ARE valid for Medicare.'},{ok:false,l:'B',w:'G codes are temporary procedure/service codes maintained by CMS — valid for Medicare.'},{ok:false,l:'C',w:'C codes are transitional pass-through payment codes under OPPS — used specifically FOR Medicare outpatient.'},{ok:true,l:'D',w:'S codes are maintained by BCBS (Blue Cross Blue Shield) for services not covered under Medicare/Medicaid. They are used for private payer claims ONLY and are NOT valid for Medicare or Medicaid.'}]},
+  {cat:'Compliance', q:'RAC stands for Recovery Audit Contractor. What is a RAC\'s primary purpose?', opts:['A. Processing Medicare claims for specific geographic regions','B. Auditing Medicare claims to identify improper payments (overpayments and underpayments)','C. Accrediting hospitals for Medicare participation','D. Setting Medicare fee schedule reimbursement rates'], cor:1, rats:[{ok:false,l:'A',w:'Processing Medicare claims for geographic regions is the role of MACs (Medicare Administrative Contractors) — not RACs.'},{ok:true,l:'B',w:'RACs (Recovery Audit Contractors) are authorized by CMS to audit Medicare claims for improper payments. They work on a contingency fee — they keep a percentage of overpayments recovered. Both overpayments AND underpayments are reviewed.'},{ok:false,l:'C',w:'Hospital accreditation for Medicare is done by The Joint Commission (TJC) — not RACs.'},{ok:false,l:'D',w:'Medicare fee schedules are set by CMS — not RACs.'}]},
+  {cat:'Coding', q:'UHDDS defines "principal diagnosis" for inpatient coding as:', opts:['A. The most expensive condition treated during the hospital stay','B. The diagnosis listed first on the patient chart by the attending physician','C. The condition established AFTER study to be chiefly responsible for the admission','D. The chronic condition with the highest DRG weight'], cor:2, rats:[{ok:false,l:'A',w:'Cost of treatment is not the basis for principal diagnosis selection — clinical reasoning is.'},{ok:false,l:'B',w:'The admitting diagnosis is the reason stated at admission — but principal diagnosis is determined AFTER study at discharge.'},{ok:true,l:'C',w:'UHDDS (Uniform Hospital Discharge Data Set) definition: "The condition established after study to be chiefly responsible for occasioning the admission to the hospital." This is the foundational inpatient sequencing rule.'},{ok:false,l:'D',w:'DRG weight is a financial concept. Principal diagnosis is a clinical concept determined by documented clinical evidence — not reimbursement considerations.'}]},
+  {cat:'Health IT', q:'The electronic transaction standard for submitting professional claims electronically (equivalent to the CMS-1500) is:', opts:['A. 835','B. 270/271','C. 837P (ASC X12 Version 5010)','D. 276/277'], cor:2, rats:[{ok:false,l:'A',w:'The 835 transaction is the Electronic Remittance Advice (ERA) — the electronic payment explanation sent BY the payer TO the provider.'},{ok:false,l:'B',w:'270/271 are the eligibility inquiry and response transactions — used to verify patient insurance coverage.'},{ok:true,l:'C',w:'The 837P is the HIPAA-standard electronic professional claim transaction (physician/provider equivalent of the paper CMS-1500). The 837I is for institutional claims (UB-04 equivalent). Both follow ASC X12 Version 5010.'},{ok:false,l:'D',w:'276/277 are claim status inquiry and response transactions — used to check on the status of a submitted claim.'}]},
+  {cat:'Accreditation', q:'A hospital with Joint Commission (TJC) accreditation receives what benefit from CMS?', opts:['A. Higher DRG reimbursement rates','B. Exemption from HIPAA requirements','C. "Deemed status" — automatically meeting Medicare/Medicaid participation requirements','D. Direct access to Medicare appeals with no waiting period'], cor:2, rats:[{ok:false,l:'A',w:'DRG rates are set by CMS fee schedules — not by TJC accreditation status.'},{ok:false,l:'B',w:'All covered entities must comply with HIPAA regardless of accreditation. There is no HIPAA exemption.'},{ok:true,l:'C',w:'TJC accreditation grants hospitals "deemed status" from CMS, meaning they automatically satisfy Medicare and Medicaid certification requirements. Loss of TJC accreditation can mean loss of Medicare/Medicaid participation.'},{ok:false,l:'D',w:'Medicare appeals processes are governed by CMS rules — not by TJC accreditation status.'}]},
+  {cat:'Federal Gov', q:'Which organization is the parent department of CMS, CDC, NIH, OIG, and FDA?', opts:['A. The White House Office of Health Policy','B. HHS — Department of Health and Human Services','C. The Department of Veterans Affairs','D. The Office of the Surgeon General'], cor:1, rats:[{ok:false,l:'A',w:'There is no such separate White House office as a parent agency to these organizations.'},{ok:true,l:'B',w:'HHS (Department of Health and Human Services) is the cabinet-level department that houses CMS, CDC (with NCHS), NIH, OIG, and FDA. Understanding this hierarchy helps you understand how policy flows down from federal legislation to billing rules.'},{ok:false,l:'C',w:'The VA (Department of Veterans Affairs) is a separate federal department. It manages TRICARE and VA healthcare — separate from Medicare/Medicaid.'},{ok:false,l:'D',w:'The Surgeon General operates under HHS but is not the parent of CMS, CDC, NIH, OIG, and FDA.'}]},
+  {cat:'Coding', q:'PDAC is a CMS contractor that helps with:', opts:['A. Processing Medicare physician claims','B. Auditing hospital coding for DRG accuracy','C. Helping DME suppliers and manufacturers determine correct HCPCS codes','D. Setting RBRVS physician fee schedule values'], cor:2, rats:[{ok:false,l:'A',w:'Physician claims are processed by MACs (Medicare Administrative Contractors) — not PDAC.'},{ok:false,l:'B',w:'Hospital coding audits are done by MACs, RACs, and other audit contractors — not PDAC.'},{ok:true,l:'C',w:'PDAC (Pricing, Coding Analysis and Coding Contractor) is a CMS contractor that helps DME/prosthetic/orthotic suppliers and manufacturers determine which HCPCS Level II codes apply to their products when billing Medicare.'},{ok:false,l:'D',w:'RBRVS fee schedule values are determined by CMS — not PDAC.'}]},
+  {cat:'Professional', q:'The AAPC primarily serves which group of healthcare professionals?', opts:['A. Hospital administrators and CFOs','B. Professional coders — offers CPC, CIC, COC, and specialty certifications','C. Physicians seeking clinical quality metrics','D. Health IT developers and EHR vendors'], cor:1, rats:[{ok:false,l:'A',w:'AAPC is not an administrative or financial leadership organization.'},{ok:true,l:'B',w:'AAPC (American Academy of Professional Coders) is the largest organization dedicated to professional medical coders. It offers the CPC (outpatient), CIC (inpatient), COC (outpatient facility), and dozens of specialty-specific credentials.'},{ok:false,l:'C',w:'Clinical quality metrics are tracked through organizations like NCQA (HEDIS measures) — not AAPC.'},{ok:false,l:'D',w:'Health IT is the focus of HIMSS — not AAPC.'}]},
+  {cat:'Payers', q:'Medicare Part A covers which services?', opts:['A. Prescription drugs','B. Outpatient physician services','C. Inpatient hospital, skilled nursing, hospice, and some home health','D. Private insurance supplemental benefits'], cor:2, rats:[{ok:false,l:'A',w:'Prescription drugs are covered under Medicare Part D — not Part A.'},{ok:false,l:'B',w:'Outpatient physician services are covered under Medicare Part B — not Part A.'},{ok:true,l:'C',w:'Medicare Part A covers inpatient hospital stays, skilled nursing facility care, hospice, and some home health services. It is the "hospital insurance" portion of Medicare and is funded through payroll taxes.'},{ok:false,l:'D',w:'Supplemental private benefits are offered through Medicare Advantage (Part C) — not traditional Part A.'}]},
+  {cat:'Federal Gov', q:'The OIG publishes the "Annual Work Plan" which tells billers and coders:', opts:['A. The new CPT codes added each year','B. The updated Medicare fee schedule rates','C. Which billing areas Medicare will focus audit attention on that year','D. Which ICD-10-CM codes were revised'], cor:2, rats:[{ok:false,l:'A',w:'New CPT codes are published by the AMA — not OIG.'},{ok:false,l:'B',w:'Medicare fee schedule rates are published by CMS — not OIG.'},{ok:true,l:'C',w:'The OIG Annual Work Plan identifies the specific billing and coding practices that OIG will scrutinize through audits and investigations that year. Providers and billers use it as a compliance roadmap to identify risk areas in their billing.'},{ok:false,l:'D',w:'ICD-10-CM code updates are published by NCHS/CDC — not OIG.'}]},
+  {cat:'Compliance', q:'TRICARE (formerly CHAMPUS) provides health insurance primarily to:', opts:['A. Low-income children under age 19','B. Active duty military, veterans, and their families','C. Elderly Americans aged 65 and older','D. Federal government civilian employees'], cor:1, rats:[{ok:false,l:'A',w:'Low-income children are covered by CHIP (Children\'s Health Insurance Program) — not TRICARE.'},{ok:true,l:'B',w:'TRICARE covers active duty service members, military retirees, and their dependents. It was formerly called CHAMPUS (Civilian Health and Medical Program of the Uniformed Services). CHAMPVA separately covers dependents of veterans with permanent service-connected disabilities.'},{ok:false,l:'C',w:'Americans 65+ are covered by Medicare — not TRICARE (unless they are also military retirees).'},{ok:false,l:'D',w:'Federal civilian employees are covered by FEHB (Federal Employees Health Benefits Program) — not TRICARE.'}]},
+  {cat:'Coding', q:'Which organization co-publishes the "AHA Coding Clinic" — the authoritative publication for ICD-10-CM/PCS coding advice?', opts:['A. AMA','B. AAPC','C. AHA — American Hospital Association','D. NCHS'], cor:2, rats:[{ok:false,l:'A',w:'AMA publishes CPT Assistant (advice for CPT codes) — not AHA Coding Clinic.'},{ok:false,l:'B',w:'AAPC publishes educational materials but not the official AHA Coding Clinic.'},{ok:true,l:'C',w:'The AHA (American Hospital Association) publishes the Coding Clinic — the authoritative source for ICD-10-CM/PCS coding guidance. It answers specific coding questions from healthcare professionals. AHA is also one of the four "cooperating parties" for ICD guidelines.'},{ok:false,l:'D',w:'NCHS develops and maintains ICD-10-CM but publishes official guidelines — not Coding Clinic.'}]},
+  {cat:'Health IT', q:'What does the 835 electronic transaction represent in medical billing?', opts:['A. A professional claim submission (CMS-1500 equivalent)','B. An eligibility verification request','C. An institutional claim submission (UB-04 equivalent)','D. Electronic Remittance Advice — the payment explanation from payer to provider'], cor:3, rats:[{ok:false,l:'A',w:'The 837P is the professional claim submission (CMS-1500 equivalent).'},{ok:false,l:'B',w:'Eligibility verification is the 270 (request) / 271 (response) transaction.'},{ok:false,l:'C',w:'The 837I is the institutional claim submission (UB-04 equivalent).'},{ok:true,l:'D',w:'The 835 is the Electronic Remittance Advice (ERA) — the electronic version of the Explanation of Benefits (EOB) that payers send to providers explaining how a claim was paid or denied. It is the HIPAA-standard payment transaction.'}]},
+  {cat:'Accreditation', q:'NCQA (National Committee for Quality Assurance) is best known for:', opts:['A. Accrediting individual hospitals for Medicare participation','B. Developing HEDIS quality measures and accrediting health plans','C. Maintaining the ICD-10-CM code set','D. Auditing physician billing for Medicare compliance'], cor:1, rats:[{ok:false,l:'A',w:'Individual hospital accreditation for Medicare is done by The Joint Commission (TJC) — not NCQA.'},{ok:true,l:'B',w:'NCQA accredits managed care organizations and health plans (HMOs, PPOs). It develops HEDIS (Healthcare Effectiveness Data and Information Set) quality measures used to evaluate and compare health plan performance.'},{ok:false,l:'C',w:'ICD-10-CM is maintained by NCHS (CDC) — not NCQA.'},{ok:false,l:'D',w:'Medicare billing audits are conducted by MACs and RACs under CMS and OIG oversight — not NCQA.'}]},
+];
+
+// ══════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════════════════
+let qIdx=0,qScore=0,qAnswered={};
+function initQuiz(){qIdx=0;qScore=0;qAnswered={};renderQ();}
+function renderQ(){
+  const w=document.getElementById('quizWrap');
+  if(qIdx>=QUESTIONS.length){showQResult();return;}
+  const q=QUESTIONS[qIdx];
+  const pct=Math.round((qIdx/QUESTIONS.length)*100);
+  const isAns=qAnswered[qIdx]!==undefined;
+  const uC=qAnswered[qIdx];
+  const catColors={'Federal Gov':{bg:'#dbeafe',txt:'#1e3a8a'},'Coding':{bg:'#ccfbf1',txt:'#065f46'},'Professional':{bg:'#ede9fe',txt:'#4c1d95'},'Payers':{bg:'#fef3c7',txt:'#92400e'},'Compliance':{bg:'#ffe4e6',txt:'#9f1239'},'Health IT':{bg:'#e0f2fe',txt:'#0c4a6e'},'Accreditation':{bg:'#fef9c3',txt:'#713f12'}};
+  const cc=catColors[q.cat]||{bg:'#f3f4f6',txt:'#374151'};
+  const optsH=q.opts.map((o,oi)=>{
+    let cls='qopt';
+    if(isAns){cls+=' locked';if(oi===q.cor)cls+=' correct';else if(oi===uC)cls+=' wrong';}
+    const l=String.fromCharCode(65+oi);
+    return `<button class="${cls}" ${isAns?'':` onclick="qAns(${qIdx},${oi})"`}><span class="qltr">${l}</span><span>${o.substring(3)}</span></button>`;
+  }).join('');
+  const ratH=isAns?q.rats.map(r=>`<div class="rrow ${r.ok?'rok':'rno'}"><span class="ri">${r.ok?'✓':'✗'}</span><span class="rat-text"><b>${r.l}.</b> ${r.w}</span></div>`).join(''):'';
+  w.innerHTML=`<div class="qprog"><div class="qp-track"><div class="qp-fill" style="width:${pct}%"></div></div><span class="qp-lbl">${qIdx+1}/${QUESTIONS.length}</span><span class="qscore">Score: ${qScore}/${qIdx}</span></div>
+  <div class="qcard">
+    <div class="qcard-head">
+      <span class="qtag" style="background:${cc.bg};color:${cc.txt};">${q.cat}</span>
+      <div class="qnum">Question ${qIdx+1} of ${QUESTIONS.length}</div>
+      <div class="qtext">${q.q}</div>
+    </div>
+    <div class="qopts">${optsH}</div>
+    <div class="rat-panel ${isAns?'show':''}">${ratH}</div>
+    <div class="nbtn-wrap ${isAns?'show':''}"><button onclick="qNext()">${qIdx<QUESTIONS.length-1?'Next question →':'See results →'}</button></div>
+  </div>`;
+}
+function qAns(qi,oi){if(qAnswered[qi]!==undefined)return;qAnswered[qi]=oi;if(oi===QUESTIONS[qi].cor)qScore++;renderQ();}
+function qNext(){qIdx++;renderQ();}
+function showQResult(){
+  const total=QUESTIONS.length;
+  const pct=Math.round((qScore/total)*100);
+  const msg=pct>=90?'Outstanding! You know your billing organizations cold.':pct>=80?'Excellent — you\'re well prepared.':pct>=70?'Good progress — review the ones you missed.':pct>=60?'Keep drilling — use the flashcards and matching game.':'More review needed — study the Organizations page and try again.';
+  const cats={};
+  QUESTIONS.forEach((q,i)=>{if(!cats[q.cat])cats[q.cat]={r:0,t:0};cats[q.cat].t++;if(qAnswered[i]===q.cor)cats[q.cat].r++;});
+  const bdH=Object.entries(cats).map(([c,s])=>{const p=Math.round((s.r/s.t)*100);const ok=p>=70;return `<div class="rb-cat" style="background:${ok?'#d1fae5':'#fee2e2'};color:${ok?'#065f46':'#991b1b'};border-color:${ok?'#34d399':'#fca5a5'}">${c}: ${s.r}/${s.t}</div>`;}).join('');
+  document.getElementById('quizWrap').innerHTML=`<div class="result-box"><div class="rb-score">${qScore}/${total}</div><div class="rb-pct">${pct}%</div><div class="rb-msg">${msg}</div><div class="rb-cats">${bdH}</div><div class="rb-btns"><button class="rb-btn p" onclick="initQuiz()">↺ Retake quiz</button><button class="rb-btn o" onclick="showPage('orgs',document.querySelector('.ntab'))">🏛️ Review orgs</button><button class="rb-btn o" onclick="showPage('match',document.querySelectorAll('.ntab')[2])">🎯 Matching game</button></div></div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='flash')initFlash();
+  if(id==='match')initMatch();
+  if(id==='quiz')initQuiz();
+}
+
+// INIT
+buildCatFilter();
+renderOrgs();
+initFlash();
+initMatch();
+</script>
+</body>
+</html>
